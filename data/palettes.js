@@ -4,7 +4,7 @@ window.CC = window.CC || {};
 window.CC.palettesPreset = [
   {
     "id": "caprice-cervinia",
-    "nome": "Caprice - Cervinia",
+    "nome": "Caprice Cervinia",
     "produttore": "Calore di Lana / Filati Cervinia",
     "materiale": "100% acrilico, 50 gr",
     "fonteUrl": "https://caloredilana.com/prodotto/caprice-cervinia/",

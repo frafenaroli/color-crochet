@@ -108,12 +108,15 @@
   function renderTipo() {
     var ultima = CC.storage.leggiStato();
     var haUltima = ultima && ultima.selezione && ultima.selezione.length >= MIN;
-    var opzioni = [
-      cardScelta("🎨", "Palette preimpostata", "Scegli i colori da un filato reale (Caprice Cervinia).",
-        function () { vaiComponi("preset"); }),
-      cardScelta("✨", "Palette personalizzata", "Crea i tuoi colori liberamente.",
-        function () { vaiComponi("custom"); }),
-    ];
+
+    // Una card per ogni set di filato preimpostato (per ora solo Caprice
+    // Cervinia): al crescere dei set compaiono qui automaticamente.
+    var opzioni = (CC.palettesPreset || []).map(function (p) {
+      return cardScelta("🏔️", p.nome, descPreset(p),
+        function () { stato.presetId = p.id; vaiComponi("preset"); });
+    });
+    opzioni.push(cardScelta("✨", "Palette personalizzata", "Crea i tuoi colori liberamente.",
+      function () { vaiComponi("custom"); }));
     if (haUltima) {
       opzioni.push(cardScelta("↩️", "Riprendi l'ultima palette",
         ultima.selezione.length + " colori salvati sul dispositivo.",
@@ -125,6 +128,15 @@
       el("div", { class: "scelte" }, opzioni),
     ]);
   }
+  // Sottotitolo della card di un set: materiale + numero colori.
+  function descPreset(p) {
+    var parti = [];
+    if (p.produttore) parti.push(p.produttore.split("/")[0].trim());
+    var n = (p.colori || []).length;
+    if (n) parti.push(n + " colori");
+    return parti.join(" · ") || "Filato preimpostato";
+  }
+
   function cardScelta(emoji, titolo, desc, onclick, extra) {
     return el("button", { class: "scelta-card" + (extra ? " " + extra : ""), type: "button", onclick: onclick }, [
       el("span", { class: "scelta-emoji", "aria-hidden": "true", text: emoji }),
@@ -232,7 +244,7 @@
           onclick: function () { stato.fase = "tipo"; render(); } }, [el("span", { text: "Indietro" })]),
         el("button", { class: "btn btn-primario", type: "button", disabled: ok ? null : "",
           onclick: function () { if (ok) { stato.fase = "anteprima"; stato.editSlot = -1; salva(); render(); } } },
-          [el("span", { text: "Vedi anteprima" })]),
+          [el("span", { text: "Prosegui" })]),
       ]),
     ]);
   }
