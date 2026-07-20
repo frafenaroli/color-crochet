@@ -197,9 +197,8 @@ button { font-family: inherit; }
 .swatch-mini { width: 100%; aspect-ratio: 1 / 1; min-height: 44px; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; cursor: pointer; }
 .swatch-mini.attivo { outline: 3px solid var(--accento); outline-offset: 1px; }
 
-.esito { color: var(--accento-scuro); font-weight: 700; text-align: center; margin: 0; }
-.esito:not(:empty) { margin-top: 0.8rem; }
-.azioni-finali { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 0.8rem; }
+.esito { min-height: 1.4em; color: var(--accento-scuro); font-weight: 700; text-align: center; margin: 0.9rem 0 0; }
+.azioni-finali { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; }
 .azioni-finali .btn { flex: none; width: 100%; }
 
 /* ---------- Controllo dimensione testo (fondo pagina) ---------- */

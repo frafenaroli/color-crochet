@@ -296,18 +296,18 @@
       el("h2", { class: "titolo-sez", text: "Colori usati" }),
       el("p", { class: "nota-piccola", text: "Tocca un colore per cambiarlo: la piastrella si aggiorna subito." }),
       renderEditorColori(),
+      esito,
       el("div", { class: "azioni-finali" }, [
         el("button", { class: "btn btn-primario grande", type: "button",
           onclick: function (e) { salvaImmagine(e.currentTarget, esito); } },
           [icon("download"), el("span", { text: "Salva immagine" })]),
         el("button", { class: "btn btn-secondario", type: "button",
           onclick: function () { stato.editSlot = -1; stato.fase = "componi"; render(); } },
-          [el("span", { text: "Cambia set di colori" })]),
+          [el("span", { text: "Modifica palette" })]),
         el("button", { class: "btn btn-neutro", type: "button",
           onclick: function () { stato.selezione = []; stato.editSlot = -1; stato.fase = "tipo"; render(); } },
           [el("span", { text: "Ricomincia" })]),
       ]),
-      esito,
     ];
     return el("section", { class: "fase" }, nodi);
   }
