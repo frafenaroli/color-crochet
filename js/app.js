@@ -57,6 +57,26 @@
     return L > 0.5 ? "#141414" : "#ffffff";
   }
 
+  // Icone Lucide (lucide.dev, licenza ISC) incorporate inline come SVG,
+  // cosi' restano self-contained e funzionano anche offline.
+  var ICONS = {
+    mountain: '<path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"/>',
+    sparkles: '<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>',
+    "rotate-ccw": '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/>',
+    "chevron-up": '<path d="m18 15-6-6-6 6"/>',
+    "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  };
+  function icon(name, cls) {
+    var s = el("span", { class: "icon" + (cls ? " " + cls : ""), "aria-hidden": "true" });
+    s.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"' +
+      ' fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      (ICONS[name] || "") + "</svg>";
+    return s;
+  }
+
   function getPreset() {
     var list = CC.palettesPreset || [];
     return list.filter(function (p) { return p.id === stato.presetId; })[0] || list[0];
@@ -112,13 +132,13 @@
     // Una card per ogni set di filato preimpostato (per ora solo Caprice
     // Cervinia): al crescere dei set compaiono qui automaticamente.
     var opzioni = (CC.palettesPreset || []).map(function (p) {
-      return cardScelta("🏔️", p.nome, descPreset(p),
+      return cardScelta(icon("mountain"), p.nome, descPreset(p),
         function () { stato.presetId = p.id; vaiComponi("preset"); });
     });
-    opzioni.push(cardScelta("✨", "Palette personalizzata", "Crea i tuoi colori liberamente.",
+    opzioni.push(cardScelta(icon("sparkles"), "Palette personalizzata", "Crea i tuoi colori liberamente.",
       function () { vaiComponi("custom"); }));
     if (haUltima) {
-      opzioni.push(cardScelta("↩️", "Riprendi l'ultima palette",
+      opzioni.push(cardScelta(icon("rotate-ccw"), "Riprendi l'ultima palette",
         ultima.selezione.length + " colori salvati sul dispositivo.",
         function () { ripristina(ultima); }, "ripristina"));
     }
@@ -137,9 +157,9 @@
     return parti.join(" · ") || "Filato preimpostato";
   }
 
-  function cardScelta(emoji, titolo, desc, onclick, extra) {
+  function cardScelta(iconNode, titolo, desc, onclick, extra) {
     return el("button", { class: "scelta-card" + (extra ? " " + extra : ""), type: "button", onclick: onclick }, [
-      el("span", { class: "scelta-emoji", "aria-hidden": "true", text: emoji }),
+      el("span", { class: "scelta-emoji" }, [iconNode]),
       el("span", { class: "scelta-titolo", text: titolo }),
       el("span", { class: "scelta-desc", text: desc }),
     ]);
@@ -178,6 +198,7 @@
       nodi.push(el("p", { class: "nota-piccola",
         text: "I colori sono indicativi e possono variare dal filato reale. L'asterisco (*) segnala un nome stimato." }));
       var p = getPreset();
+      nodi.push(el("div", { class: "set-attivo" }, [ icon("mountain"), el("span", { text: p.nome }) ]));
       nodi.push(el("div", { class: "griglia-colori" }, p.colori.map(function (c) { return swatchGrid(c); })));
     } else {
       nodi.push(el("p", { class: "sottotitolo", text: "Scegli un colore e aggiungilo alla palette. Potrai cambiarli anche dopo, sull'anteprima." }));
@@ -230,7 +251,7 @@
         el("span", { class: "chip-nome", text: c.nome }),
         el("button", { class: "mini-btn mini-rimuovi", type: "button", "aria-label": "Togli " + c.nome,
           onclick: function () { stato.selezione.splice(i, 1); salva(); render(); } },
-          [el("span", { "aria-hidden": "true", text: "✕" })]),
+          [icon("x")]),
       ]);
     });
     var ok = n >= MIN && n <= MAX;
@@ -279,7 +300,7 @@
       el("div", { class: "azioni-finali" }, [
         el("button", { class: "btn btn-primario grande", type: "button",
           onclick: function (e) { salvaImmagine(e.currentTarget, esito); } },
-          [el("span", { text: "💾 Salva immagine" })]),
+          [icon("download"), el("span", { text: "Salva immagine" })]),
         el("button", { class: "btn btn-secondario", type: "button",
           onclick: function () { stato.editSlot = -1; stato.fase = "componi"; render(); } },
           [el("span", { text: "Cambia set di colori" })]),
@@ -309,13 +330,13 @@
         ]),
         el("div", { class: "legenda-azioni" }, [
           el("button", { class: "mini-btn", type: "button", "aria-label": "Sposta su", disabled: i === 0 ? "" : null,
-            onclick: function () { sposta(i, -1); } }, [el("span", { "aria-hidden": "true", text: "▲" })]),
+            onclick: function () { sposta(i, -1); } }, [icon("chevron-up")]),
           el("button", { class: "mini-btn", type: "button", "aria-label": "Sposta giù", disabled: i === n - 1 ? "" : null,
-            onclick: function () { sposta(i, 1); } }, [el("span", { "aria-hidden": "true", text: "▼" })]),
+            onclick: function () { sposta(i, 1); } }, [icon("chevron-down")]),
           el("button", { class: "mini-btn mini-rimuovi", type: "button", "aria-label": "Togli colore",
             disabled: n <= MIN ? "" : null,
             onclick: function () { if (n > MIN) { stato.selezione.splice(i, 1); if (stato.editSlot >= i) stato.editSlot = -1; salva(); render(); } } },
-            [el("span", { "aria-hidden": "true", text: "✕" })]),
+            [icon("x")]),
         ]),
       ]);
       var wrap = el("div", { class: "legenda-wrap" }, [riga]);
@@ -326,7 +347,7 @@
     var out = el("div", {}, [lista]);
     if (n < MAX) {
       out.appendChild(el("button", { class: "btn btn-secondario btn-aggiungi", type: "button",
-        onclick: function () { aggiungiSlot(); } }, [el("span", { text: "＋ Aggiungi colore" })]));
+        onclick: function () { aggiungiSlot(); } }, [icon("plus"), el("span", { text: "Aggiungi colore" })]));
     }
     return out;
   }

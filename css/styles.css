@@ -14,8 +14,8 @@
   --bordo: #d3d9ea;
   --testo: #161a26;        /* quasi nero con tinta blu — AAA su superfici chiare */
   --testo-soft: #45506b;
-  --accento: #3a41c6;      /* indaco */
-  --accento-scuro: #272da0;
+  --accento: #05042f;      /* indaco molto scuro */
+  --accento-scuro: #0c0a45;
   --accento-testo: #ffffff;
   --neutro: #e6eaf6;
   --focus: #1d4ed8;
@@ -51,6 +51,10 @@ html, body {
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 button { font-family: inherit; }
 
+/* Icone (Lucide) */
+.icon { display: inline-flex; align-items: center; justify-content: center; }
+.icon svg { display: block; }
+
 /* ---------- Topbar ---------- */
 .topbar {
   position: sticky;
@@ -83,9 +87,18 @@ button { font-family: inherit; }
 }
 .scelta-card:active { border-color: var(--accento); }
 .scelta-card.ripristina { border-style: dashed; background: var(--neutro); }
-.scelta-emoji { font-size: 1.8rem; }
+.scelta-emoji { font-size: 1.8rem; color: var(--accento); }
 .scelta-titolo { font-size: 1.25rem; font-weight: 700; }
 .scelta-desc { color: var(--testo-soft); font-size: 0.95rem; }
+
+/* Nome del set selezionato, sopra la griglia */
+.set-attivo {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.8rem; margin-bottom: 0.9rem;
+  background: var(--neutro); border: 1px solid var(--bordo); border-radius: 999px;
+  font-weight: 700; color: var(--testo);
+}
+.set-attivo .icon { color: var(--accento); font-size: 1.15rem; }
 
 /* ---------- Fase 2: griglia colori ---------- */
 .griglia-colori {
@@ -133,7 +146,7 @@ button { font-family: inherit; }
 .barra-azioni { display: flex; gap: 0.6rem; }
 
 /* ---------- Bottoni ---------- */
-.btn { flex: 1; min-height: var(--touch); padding: 0.7rem 1rem; border-radius: var(--raggio-s); font-size: 1.05rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; }
+.btn { flex: 1; min-height: var(--touch); padding: 0.7rem 1rem; border-radius: var(--raggio-s); font-size: 1.05rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primario { background: var(--accento); color: var(--accento-testo); border-color: var(--accento-scuro); }
 .btn-primario:active:not(:disabled) { background: var(--accento-scuro); }
@@ -172,7 +185,8 @@ button { font-family: inherit; }
 .legenda-nome { font-weight: 700; }
 .legenda-cod { color: var(--testo-soft); font-size: 0.82rem; }
 .legenda-azioni { display: flex; gap: 3px; }
-.mini-btn { min-width: 40px; min-height: 40px; border: 1px solid var(--bordo); background: var(--superficie); border-radius: 9px; font-size: 0.9rem; cursor: pointer; }
+.mini-btn { min-width: 40px; min-height: 40px; border: 1px solid var(--bordo); background: var(--superficie); border-radius: 9px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.mini-btn .icon { font-size: 1.15rem; }
 .mini-btn:disabled { opacity: 0.32; cursor: default; }
 .mini-rimuovi { color: #a11d2e; font-weight: 700; }
 
