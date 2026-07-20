@@ -1,147 +1,172 @@
 /*
- * tiles.js — generatori di piastrelle a uncinetto in SVG.
+ * tiles.js — piastrelle a uncinetto in SVG, tutte in stile granny square.
  *
- * Ogni template e' una funzione che riceve la lista di colori (hex) della
- * palette e restituisce il markup SVG di una piastrella 400x400.
- * Ogni "giro" della piastrella e' un elemento SVG separato con attributo
- * data-giro: i colori si distribuiscono sui giri in modo ciclico, cosi' in
- * futuro sara' possibile assegnarli anche manualmente giro-per-giro.
+ * Ogni template e' una variante di granny square: giri concentrici a cui
+ * vengono assegnati ciclicamente i colori della palette. Il disegno e'
+ * semplificato ma con una texture "a punti" (trattini radiali) che richiama
+ * i punti reali del crochet, invece di quadrati piatti.
+ *
+ * Ogni giro e' un gruppo SVG con attributo data-giro, cosi' in futuro si
+ * potra' assegnare il colore giro-per-giro.
  */
 (function () {
   "use strict";
   window.CC = window.CC || {};
 
   var SIZE = 400;
-  var C = SIZE / 2; // centro
+  var C = SIZE / 2;
+  var MARGINE = 16;
 
-  // Restituisce il colore per il giro i, ciclando sulla palette.
   function colGiro(colori, i) {
     return colori[i % colori.length];
   }
 
-  // Rettangolo centrato.
-  function rect(x, y, w, h, fill, giro, extra) {
+  // Scurisce (f<1) o schiarisce (f>1) un colore hex.
+  function shade(hex, f) {
+    var h = hex.replace("#", "");
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+    function cl(v){ return Math.max(0, Math.min(255, Math.round(v))); }
+    if (f <= 1) { r*=f; g*=f; b*=f; }
+    else { r = r + (255-r)*(f-1); g = g + (255-g)*(f-1); b = b + (255-b)*(f-1); }
+    return "#" + [cl(r),cl(g),cl(b)].map(function(v){ return ("0"+v.toString(16)).slice(-2); }).join("");
+  }
+
+  // Path di un quadrato con angoli arrotondati, centrato in C.
+  function quadPath(half, rx) {
+    var x = C - half, y = C - half, s = half * 2;
+    rx = Math.min(rx, half);
+    return "M" + (x+rx) + " " + y +
+      " h" + (s-2*rx) + " a" + rx + " " + rx + " 0 0 1 " + rx + " " + rx +
+      " v" + (s-2*rx) + " a" + rx + " " + rx + " 0 0 1 " + (-rx) + " " + rx +
+      " h" + (-(s-2*rx)) + " a" + rx + " " + rx + " 0 0 1 " + (-rx) + " " + (-rx) +
+      " v" + (-(s-2*rx)) + " a" + rx + " " + rx + " 0 0 1 " + rx + " " + (-rx) + " Z";
+  }
+
+  // Un giro "a punti": banda piena scura + punti del colore sopra (dash radiali).
+  function giroQuadro(half, t, col, giro) {
+    var rx = Math.max(3, half * 0.16);
+    var d = quadPath(half, rx);
+    var punto = t * 0.72, vuoto = t * 0.36;
     return (
-      '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h +
-      '" fill="' + fill + '" data-giro="' + giro + '"' +
-      (extra || "") + "></rect>"
+      '<g data-giro="' + giro + '">' +
+      // strato scuro (spazi tra i punti)
+      '<path d="' + d + '" fill="none" stroke="' + shade(col, 0.55) +
+        '" stroke-width="' + t + '" stroke-linecap="butt"></path>' +
+      // punti del colore
+      '<path d="' + d + '" fill="none" stroke="' + col +
+        '" stroke-width="' + (t * 0.92) + '" stroke-linecap="butt"' +
+        ' stroke-dasharray="' + punto.toFixed(1) + " " + vuoto.toFixed(1) + '"></path>' +
+      "</g>"
     );
   }
 
-  // --- Template 1: Granny Square classico (quadrati concentrici) ---
-  function grannyClassico(colori) {
-    var giri = 6;
-    var parts = [];
-    var step = C / giri; // ampiezza di ogni anello
-    for (var i = 0; i < giri; i++) {
-      var inset = i * step;
-      var side = SIZE - inset * 2;
-      parts.push(
-        rect(inset, inset, side, side, colGiro(colori, i), i, ' rx="6"')
-      );
-    }
-    // Piccolo bottone centrale per rifinire il centro (ultimo colore + 1).
-    parts.push(
-      '<circle cx="' + C + '" cy="' + C + '" r="' + step * 0.5 +
-      '" fill="' + colGiro(colori, giri) + '" data-giro="' + giri + '"></circle>'
+  // Un giro circolare "a punti".
+  function giroCerchio(r, t, col, giro) {
+    var circ = 2 * Math.PI * r;
+    var n = Math.max(8, Math.round(circ / (t * 0.9)));
+    var punto = (circ / n) * 0.64, vuoto = (circ / n) * 0.36;
+    return (
+      '<g data-giro="' + giro + '">' +
+      '<circle cx="' + C + '" cy="' + C + '" r="' + r + '" fill="none" stroke="' +
+        shade(col, 0.55) + '" stroke-width="' + t + '"></circle>' +
+      '<circle cx="' + C + '" cy="' + C + '" r="' + r + '" fill="none" stroke="' + col +
+        '" stroke-width="' + (t * 0.92) + '" stroke-dasharray="' +
+        punto.toFixed(1) + " " + vuoto.toFixed(1) + '"></circle>' +
+      "</g>"
     );
-    return parts.join("");
   }
 
-  // --- Template 2: Cerchi concentrici ---
-  function cerchiConcentrici(colori) {
-    var giri = 6;
-    var parts = [];
-    var rMax = C * 0.96;
-    var step = rMax / giri;
-    for (var i = 0; i < giri; i++) {
-      var r = rMax - i * step;
-      parts.push(
-        '<circle cx="' + C + '" cy="' + C + '" r="' + r +
-        '" fill="' + colGiro(colori, i) + '" data-giro="' + i + '"></circle>'
-      );
-    }
-    return parts.join("");
-  }
-
-  // --- Template 3: Rombi concentrici (quadrati ruotati 45°) ---
-  function rombiConcentrici(colori) {
-    var giri = 6;
-    var parts = ['<g transform="rotate(45 ' + C + " " + C + ')">'];
-    var step = (C * 0.72) / giri;
-    var half0 = C * 0.72;
-    for (var i = 0; i < giri; i++) {
-      var half = half0 - i * step;
-      var side = half * 2;
-      parts.push(
-        rect(C - half, C - half, side, side, colGiro(colori, i), i)
-      );
-    }
-    parts.push("</g>");
-    return parts.join("");
-  }
-
-  // --- Template 4: Righe (piastrella a strisce) ---
-  function righe(colori) {
-    var giri = 7;
-    var parts = [];
-    var h = SIZE / giri;
-    for (var i = 0; i < giri; i++) {
-      parts.push(rect(0, i * h, SIZE, h + 0.5, colGiro(colori, i), i));
-    }
-    return parts.join("");
-  }
-
-  // --- Template 5: Sole (centro + raggi a spicchi) ---
-  function sole(colori) {
-    var raggi = 12;
-    var parts = [];
-    // Spicchi esterni alternati sui colori.
-    for (var i = 0; i < raggi; i++) {
-      var a0 = (i / raggi) * 2 * Math.PI - Math.PI / 2;
-      var a1 = ((i + 1) / raggi) * 2 * Math.PI - Math.PI / 2;
-      var R = C * 0.98;
-      var x0 = C + R * Math.cos(a0), y0 = C + R * Math.sin(a0);
-      var x1 = C + R * Math.cos(a1), y1 = C + R * Math.sin(a1);
-      parts.push(
-        '<path d="M' + C + " " + C + " L" + x0.toFixed(1) + " " +
-        y0.toFixed(1) + " A" + R + " " + R + " 0 0 1 " + x1.toFixed(1) +
-        " " + y1.toFixed(1) + ' Z" fill="' + colGiro(colori, i) +
-        '" data-giro="' + i + '"></path>'
-      );
-    }
-    // Anello e cuore centrale.
-    parts.push(
-      '<circle cx="' + C + '" cy="' + C + '" r="' + C * 0.42 +
-      '" fill="' + colGiro(colori, raggi) + '" data-giro="' + raggi + '"></circle>'
+  function centro(col, giro, raggio) {
+    return (
+      '<g data-giro="' + giro + '">' +
+      '<circle cx="' + C + '" cy="' + C + '" r="' + raggio + '" fill="' + shade(col,0.55) + '"></circle>' +
+      '<circle cx="' + C + '" cy="' + C + '" r="' + (raggio*0.82) + '" fill="' + col + '"></circle>' +
+      "</g>"
     );
-    parts.push(
-      '<circle cx="' + C + '" cy="' + C + '" r="' + C * 0.2 +
-      '" fill="' + colGiro(colori, raggi + 1) + '" data-giro="' + (raggi + 1) + '"></circle>'
-    );
+  }
+
+  // --- Template 1: Granny classica (giri quadrati a punti) ---
+  function grannyClassica(colori) {
+    var giri = 6, parts = [];
+    var span = C - MARGINE;      // dal centro al bordo utile
+    var t = span / giri;         // spessore di ogni giro
+    for (var i = 0; i < giri; i++) {
+      var half = span - i * t - t / 2;   // mezzo-lato della linea mediana del giro
+      parts.push(giroQuadro(half, t, colGiro(colori, i), i));
+    }
+    parts.push(centro(colGiro(colori, giri), giri, t * 0.7));
     return parts.join("");
   }
 
-  // Registro dei template disponibili (2-5 richiesti).
+  // --- Template 2: Granny a fiore (centro a petali + giri quadrati) ---
+  function grannyFiore(colori) {
+    var parts = [];
+    var giriQuad = 4;
+    var span = C - MARGINE;
+    var t = span / (giriQuad + 1.6); // lascia spazio al fiore centrale
+    // giri quadrati esterni
+    for (var i = 0; i < giriQuad; i++) {
+      var half = (C - MARGINE) - i * t - t / 2;
+      parts.push(giroQuadro(half, t, colGiro(colori, i), i));
+    }
+    // fiore: petali attorno al centro
+    var colPet = colGiro(colori, giriQuad);
+    var colCuore = colGiro(colori, giriQuad + 1);
+    var rPet = t * 1.15, dist = t * 1.15;
+    var petali = ['<g data-giro="' + giriQuad + '">'];
+    for (var p = 0; p < 6; p++) {
+      var a = (p / 6) * 2 * Math.PI;
+      var px = C + dist * Math.cos(a), py = C + dist * Math.sin(a);
+      petali.push('<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + rPet.toFixed(1) +
+        '" fill="' + shade(colPet,0.55) + '"></circle>');
+      petali.push('<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + (rPet*0.8).toFixed(1) +
+        '" fill="' + colPet + '"></circle>');
+    }
+    petali.push("</g>");
+    parts.push(petali.join(""));
+    parts.push(centro(colCuore, giriQuad + 1, t * 0.95));
+    return parts.join("");
+  }
+
+  // --- Template 3: Granny cerchio-nel-quadrato ---
+  function grannyCerchio(colori) {
+    var parts = [];
+    var span = C - MARGINE;
+    var giriQuad = 2;   // cornici quadrate esterne
+    var giriCerc = 4;   // cerchi interni
+    var tQ = span / (giriQuad + giriCerc);
+    // cornici quadrate esterne
+    for (var i = 0; i < giriQuad; i++) {
+      var half = (C - MARGINE) - i * tQ - tQ / 2;
+      parts.push(giroQuadro(half, tQ, colGiro(colori, i), i));
+    }
+    // cerchi interni
+    var rStart = (C - MARGINE) - giriQuad * tQ;
+    var tC = rStart / giriCerc;
+    for (var j = 0; j < giriCerc; j++) {
+      var r = rStart - j * tC - tC / 2;
+      parts.push(giroCerchio(r, tC, colGiro(colori, giriQuad + j), giriQuad + j));
+    }
+    parts.push(centro(colGiro(colori, giriQuad + giriCerc), giriQuad + giriCerc, tC * 0.7));
+    return parts.join("");
+  }
+
   CC.templates = [
-    { id: "granny", nome: "Granny Square", render: grannyClassico },
-    { id: "cerchi", nome: "Cerchi", render: cerchiConcentrici },
-    { id: "rombi", nome: "Rombi", render: rombiConcentrici },
-    { id: "righe", nome: "Righe", render: righe },
-    { id: "sole", nome: "Sole", render: sole },
+    { id: "classica", nome: "Classica", render: grannyClassica },
+    { id: "fiore", nome: "Fiore", render: grannyFiore },
+    { id: "cerchio", nome: "Cerchio", render: grannyCerchio },
   ];
 
-  // Costruisce l'SVG completo per un dato template e una palette di colori.
   CC.buildTileSVG = function (templateId, colori) {
-    var tpl = CC.templates.filter(function (t) { return t.id === templateId; })[0];
-    if (!tpl) tpl = CC.templates[0];
-    var inner = tpl.render(colori && colori.length ? colori : ["#dddddd"]);
+    var tpl = CC.templates.filter(function (t) { return t.id === templateId; })[0] || CC.templates[0];
+    var cc = (colori && colori.length) ? colori : ["#c9cddb"];
+    var inner = tpl.render(cc);
     return (
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + SIZE + " " +
-      SIZE + '" width="' + SIZE + '" height="' + SIZE +
-      '" role="img" aria-label="Anteprima piastrella">' +
-      '<rect x="0" y="0" width="' + SIZE + '" height="' + SIZE +
-      '" fill="#ffffff"></rect>' + inner + "</svg>"
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + SIZE + " " + SIZE +
+      '" width="' + SIZE + '" height="' + SIZE + '" role="img" aria-label="Anteprima piastrella">' +
+      '<rect x="0" y="0" width="' + SIZE + '" height="' + SIZE + '" rx="18" fill="#ffffff"></rect>' +
+      inner + "</svg>"
     );
   };
 

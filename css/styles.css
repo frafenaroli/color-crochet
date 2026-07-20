@@ -1,27 +1,28 @@
 /*
  * ColorCrochet — foglio di stile.
- * Mobile first. Palette di sistema neutra (non deve competere con i colori
+ * Mobile first. Font Manrope. Palette di sistema sui toni blu/indaco,
+ * neutra e con priorita' alla leggibilita' (non deve competere con i colori
  * della lana). Testo grande, contrasto elevato, target touch >= 44px.
  */
 
 :root {
   --font-scala: 1;
 
-  /* Palette di sistema neutra */
-  --bg: #f4f2ee;
+  /* Palette di sistema (blu/indaco) */
+  --bg: #eef1f8;
   --superficie: #ffffff;
-  --bordo: #d7d2c8;
-  --testo: #1c1b19;        /* contrasto AAA su superfici chiare */
-  --testo-soft: #4a463f;
-  --accento: #2f6f5e;      /* verde salvia scuro */
-  --accento-scuro: #235244;
+  --bordo: #d3d9ea;
+  --testo: #161a26;        /* quasi nero con tinta blu — AAA su superfici chiare */
+  --testo-soft: #45506b;
+  --accento: #3a41c6;      /* indaco */
+  --accento-scuro: #272da0;
   --accento-testo: #ffffff;
-  --neutro: #e9e5dd;
-  --focus: #12508f;
+  --neutro: #e6eaf6;
+  --focus: #1d4ed8;
 
-  --raggio: 14px;
-  --raggio-s: 10px;
-  --ombra: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --raggio: 16px;
+  --raggio-s: 11px;
+  --ombra: 0 2px 10px rgba(28, 38, 92, 0.10);
   --touch: 48px;
 
   font-size: calc(18px * var(--font-scala));
@@ -34,7 +35,7 @@ html, body {
   padding: 0;
   background: var(--bg);
   color: var(--testo);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
@@ -47,11 +48,7 @@ html, body {
   flex-direction: column;
 }
 
-/* Focus visibile ovunque */
-:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-}
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 button { font-family: inherit; }
 
 /* ---------- Topbar ---------- */
@@ -61,50 +58,28 @@ button { font-family: inherit; }
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.6rem 1rem;
+  padding: 0.7rem 1rem;
   background: var(--accento);
   color: var(--accento-testo);
 }
 .brand { display: flex; align-items: center; gap: 0.5rem; }
 .brand-logo { font-size: 1.5rem; }
-.brand-name { font-weight: 700; font-size: 1.2rem; letter-spacing: 0.2px; }
-.font-ctrl { display: flex; gap: 0.4rem; }
-.font-btn {
-  min-width: var(--touch);
-  min-height: var(--touch);
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border-radius: var(--raggio-s);
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.font-btn:active { background: rgba(255, 255, 255, 0.28); }
+.brand-name { font-weight: 800; font-size: 1.25rem; letter-spacing: 0.2px; }
 
-/* ---------- Layout contenuto ---------- */
+/* ---------- Contenuto ---------- */
 .contenuto { flex: 1; padding: 1.1rem 1rem 2rem; }
-.titolo-fase { font-size: 1.5rem; margin: 0.2rem 0 0.3rem; }
-.titolo-sez { font-size: 1.2rem; margin: 1.4rem 0 0.6rem; }
-.sottotitolo { color: var(--testo-soft); margin: 0 0 1.1rem; }
+.titolo-fase { font-size: 1.55rem; font-weight: 800; margin: 0.2rem 0 0.3rem; }
+.titolo-sez { font-size: 1.25rem; font-weight: 700; margin: 1.5rem 0 0.4rem; }
+.sottotitolo { color: var(--testo-soft); margin: 0 0 0.8rem; }
+.nota-piccola { color: var(--testo-soft); font-size: 0.85rem; margin: 0 0 1rem; }
 
-/* ---------- Fase 1: scelta tipo ---------- */
+/* ---------- Fase 1 ---------- */
 .scelte { display: flex; flex-direction: column; gap: 1rem; }
 .scelta-card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  text-align: left;
-  padding: 1.2rem;
-  min-height: var(--touch);
-  background: var(--superficie);
-  border: 2px solid var(--bordo);
-  border-radius: var(--raggio);
-  box-shadow: var(--ombra);
-  cursor: pointer;
-  color: var(--testo);
+  display: flex; flex-direction: column; gap: 0.35rem; text-align: left;
+  padding: 1.2rem; min-height: var(--touch);
+  background: var(--superficie); border: 2px solid var(--bordo);
+  border-radius: var(--raggio); box-shadow: var(--ombra); cursor: pointer; color: var(--testo);
 }
 .scelta-card:active { border-color: var(--accento); }
 .scelta-card.ripristina { border-style: dashed; background: var(--neutro); }
@@ -114,228 +89,132 @@ button { font-family: inherit; }
 
 /* ---------- Fase 2: griglia colori ---------- */
 .griglia-colori {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
-  gap: 0.7rem;
-  margin-bottom: 1rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.7rem; margin-bottom: 1rem;
 }
 .swatch {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.25rem;
-  padding: 0.35rem;
-  background: var(--superficie);
-  border: 2px solid var(--bordo);
-  border-radius: var(--raggio-s);
-  cursor: pointer;
-  min-height: var(--touch);
-  text-align: center;
+  display: flex; flex-direction: column; gap: 0.25rem; padding: 0.35rem;
+  background: var(--superficie); border: 2px solid var(--bordo); border-radius: var(--raggio-s);
+  cursor: pointer; min-height: var(--touch); text-align: center;
 }
 .swatch:disabled { opacity: 0.45; cursor: not-allowed; }
-.swatch.sel {
-  border-color: var(--accento);
-  border-width: 4px;
-  padding: calc(0.35rem - 2px);
-  box-shadow: 0 0 0 2px var(--accento);
-}
-.swatch-col {
-  position: relative;
-  display: block;
-  width: 100%;
-  height: 62px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-}
+.swatch.sel { border-color: var(--accento); border-width: 4px; padding: calc(0.35rem - 2px); box-shadow: 0 0 0 2px var(--accento); }
+.swatch-col { position: relative; display: block; width: 100%; height: 62px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.12); }
 .swatch-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 800;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.35);
+  position: absolute; top: 4px; right: 4px; min-width: 24px; height: 24px; padding: 0 4px;
+  display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800;
+  border-radius: 12px; background: rgba(255,255,255,0.45);
 }
-.swatch.sel .swatch-badge { background: rgba(255, 255, 255, 0.55); }
 .swatch-nome { font-size: 0.85rem; font-weight: 600; line-height: 1.2; }
 .swatch-cod { font-size: 0.72rem; color: var(--testo-soft); }
 
-/* ---------- Fase 2: color picker personalizzato ---------- */
+/* ---------- Color picker (fase 2 + pannello edit) ---------- */
 .custom-picker {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--superficie);
-  border: 2px solid var(--bordo);
-  border-radius: var(--raggio);
-  margin-bottom: 1rem;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem;
+  background: var(--superficie); border: 2px solid var(--bordo); border-radius: var(--raggio); margin-bottom: 1rem;
 }
 .picker-wrap { position: relative; display: inline-flex; }
-.picker-preview {
-  display: block;
-  width: 88px;
-  height: 88px;
-  border-radius: var(--raggio-s);
-  border: 2px solid var(--bordo);
-}
-.picker {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-}
+.picker-preview { display: block; width: 88px; height: 88px; border-radius: var(--raggio-s); border: 2px solid var(--bordo); }
+.picker-wrap.grande .picker-preview { width: 110px; height: 110px; }
+.picker { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-/* ---------- Barra selezione (bottom sheet) ---------- */
+/* ---------- Barra selezione (fase 2) ---------- */
 .barra-sel {
-  position: sticky;
-  bottom: 0;
-  margin: 0.5rem -1rem -2rem;
-  padding: 0.8rem 1rem 1rem;
-  background: var(--superficie);
-  border-top: 2px solid var(--bordo);
-  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.08);
+  position: sticky; bottom: 0; margin: 0.5rem -1rem -2rem; padding: 0.8rem 1rem 1rem;
+  background: var(--superficie); border-top: 2px solid var(--bordo); box-shadow: 0 -4px 14px rgba(28,38,92,0.10);
 }
 .barra-info { margin-bottom: 0.5rem; }
 .contatore { font-weight: 700; color: var(--testo-soft); }
 .contatore.ok { color: var(--accento-scuro); }
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.7rem; }
-.chip {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.4rem 0.25rem 0.25rem;
-  background: var(--neutro);
-  border: 1px solid var(--bordo);
-  border-radius: 999px;
-}
+.chip { display: flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.4rem 0.25rem 0.25rem; background: var(--neutro); border: 1px solid var(--bordo); border-radius: 999px; }
 .chip-col { width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); }
-.chip-nome { font-size: 0.85rem; font-weight: 600; max-width: 8ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chip-azioni { display: flex; gap: 2px; }
-.mini-btn {
-  min-width: 38px;
-  min-height: 38px;
-  border: 1px solid var(--bordo);
-  background: var(--superficie);
-  border-radius: 8px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-.mini-btn:disabled { opacity: 0.35; cursor: default; }
-.mini-rimuovi { color: #9a2020; font-weight: 700; }
+.chip-nome { font-size: 0.85rem; font-weight: 600; max-width: 9ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .barra-azioni { display: flex; gap: 0.6rem; }
 
 /* ---------- Bottoni ---------- */
-.btn {
-  flex: 1;
-  min-height: var(--touch);
-  padding: 0.7rem 1rem;
-  border-radius: var(--raggio-s);
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
+.btn { flex: 1; min-height: var(--touch); padding: 0.7rem 1rem; border-radius: var(--raggio-s); font-size: 1.05rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-primario { background: var(--accento); color: var(--accento-testo); border-color: var(--accento-scuro); }
 .btn-primario:active:not(:disabled) { background: var(--accento-scuro); }
 .btn-secondario { background: var(--superficie); color: var(--testo); border-color: var(--bordo); }
 .btn-neutro { background: transparent; color: var(--testo-soft); border-color: transparent; text-decoration: underline; }
 .btn.grande { font-size: 1.15rem; min-height: 56px; }
+.btn-aggiungi { width: 100%; flex: none; margin-top: 0.8rem; }
 
 /* ---------- Fase 3: anteprima ---------- */
 .tile-grande {
-  width: 100%;
-  max-width: 420px;
-  margin: 0.4rem auto 0.8rem;
-  background: var(--superficie);
-  border: 2px solid var(--bordo);
-  border-radius: var(--raggio);
-  padding: 10px;
-  box-shadow: var(--ombra);
+  width: 100%; max-width: 420px; margin: 0.4rem auto 0.8rem;
+  background: var(--superficie); border: 2px solid var(--bordo); border-radius: var(--raggio);
+  padding: 10px; box-shadow: var(--ombra);
 }
-.tile-grande svg { display: block; width: 100%; height: auto; border-radius: 8px; }
-.etichetta-modello { text-align: center; color: var(--testo-soft); margin: 0 0 0.6rem; font-size: 0.9rem; }
-.template-scelta {
-  display: flex;
-  gap: 0.6rem;
-  overflow-x: auto;
-  padding-bottom: 0.4rem;
-  -webkit-overflow-scrolling: touch;
-}
-.tpl-btn {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-  width: 84px;
-  padding: 0.4rem;
-  background: var(--superficie);
-  border: 2px solid var(--bordo);
-  border-radius: var(--raggio-s);
-  cursor: pointer;
-}
+.tile-grande svg { display: block; width: 100%; height: auto; border-radius: 10px; }
+.etichetta-modello { text-align: center; color: var(--testo-soft); margin: 0 0 0.5rem; font-size: 0.9rem; font-weight: 600; }
+.template-scelta { display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.4rem; -webkit-overflow-scrolling: touch; }
+.tpl-btn { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; width: 88px; padding: 0.4rem; background: var(--superficie); border: 2px solid var(--bordo); border-radius: var(--raggio-s); cursor: pointer; }
 .tpl-btn.attivo { border-color: var(--accento); border-width: 3px; padding: calc(0.4rem - 1px); }
-.tpl-mini { width: 60px; height: 60px; display: block; }
-.tpl-mini svg { width: 100%; height: 100%; border-radius: 6px; }
-.tpl-nome { font-size: 0.8rem; font-weight: 600; }
+.tpl-mini { width: 64px; height: 64px; display: block; }
+.tpl-mini svg { width: 100%; height: 100%; border-radius: 8px; }
+.tpl-nome { font-size: 0.82rem; font-weight: 700; }
 
+/* ---------- Editor colori (fase 3) ---------- */
 .legenda { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.legenda-item {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.5rem 0.7rem;
-  background: var(--superficie);
-  border: 1px solid var(--bordo);
-  border-radius: var(--raggio-s);
+.legenda-wrap {
+  background: var(--superficie); border: 1px solid var(--bordo); border-radius: var(--raggio-s); overflow: hidden;
 }
-.legenda-num {
-  flex: 0 0 auto;
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--neutro);
-  border-radius: 50%;
-  font-weight: 800;
-  font-size: 0.9rem;
-}
-.legenda-col { width: 34px; height: 34px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); flex: 0 0 auto; }
-.legenda-nome { font-weight: 600; flex: 1; }
-.legenda-cod { color: var(--testo-soft); font-size: 0.85rem; }
+.legenda-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.7rem; }
+.legenda-item.aperto { background: var(--neutro); }
+.legenda-num { flex: 0 0 auto; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; background: var(--neutro); border-radius: 50%; font-weight: 800; font-size: 0.9rem; }
+.legenda-col-btn { flex: 0 0 auto; padding: 4px; background: transparent; border: 2px solid transparent; border-radius: 10px; cursor: pointer; }
+.legenda-col-btn[aria-expanded="true"] { border-color: var(--accento); }
+.legenda-col { display: block; width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.15); }
+.legenda-testo { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.legenda-nome { font-weight: 700; }
+.legenda-cod { color: var(--testo-soft); font-size: 0.82rem; }
+.legenda-azioni { display: flex; gap: 3px; }
+.mini-btn { min-width: 40px; min-height: 40px; border: 1px solid var(--bordo); background: var(--superficie); border-radius: 9px; font-size: 0.9rem; cursor: pointer; }
+.mini-btn:disabled { opacity: 0.32; cursor: default; }
+.mini-rimuovi { color: #a11d2e; font-weight: 700; }
 
-.esito { min-height: 1.4em; color: var(--accento-scuro); font-weight: 700; text-align: center; margin: 0.8rem 0 0; }
+.pannello-edit { padding: 0.7rem; border-top: 1px dashed var(--bordo); }
+.pannello-hint, .pannello-edit .picker-wrap { display: block; }
+.pannello-hint { margin-top: 0.5rem; color: var(--testo-soft); font-size: 0.85rem; }
+.griglia-mini { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; max-height: 240px; overflow-y: auto; }
+.swatch-mini { width: 100%; aspect-ratio: 1 / 1; min-height: 44px; border: 1px solid rgba(0,0,0,0.15); border-radius: 8px; cursor: pointer; }
+.swatch-mini.attivo { outline: 3px solid var(--accento); outline-offset: 1px; }
+
+.esito { min-height: 1.4em; color: var(--accento-scuro); font-weight: 700; text-align: center; margin: 0.9rem 0 0; }
 .azioni-finali { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; }
 .azioni-finali .btn { flex: none; width: 100%; }
 
-/* ---------- Footer ---------- */
-.footer {
-  padding: 1.2rem 1rem 1.6rem;
-  color: var(--testo-soft);
-  font-size: 0.82rem;
-  border-top: 1px solid var(--bordo);
-  margin-top: auto;
+/* ---------- Controllo dimensione testo (fondo pagina) ---------- */
+.font-sezione {
+  max-width: 780px; margin: 0 auto; width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  padding: 0.9rem 1rem; border-top: 1px solid var(--bordo);
 }
-.footer p { margin: 0.3rem 0; }
-.nota-asterisco { font-style: italic; }
+.font-label { font-weight: 700; color: var(--testo-soft); }
+.font-ctrl { display: flex; gap: 0.5rem; }
+.font-btn { min-width: var(--touch); min-height: var(--touch); border: 2px solid var(--bordo); background: var(--superficie); color: var(--testo); border-radius: var(--raggio-s); font-size: 1.05rem; font-weight: 800; cursor: pointer; }
+.font-btn:active { background: var(--neutro); }
 
-/* ---------- Tablet / desktop (non deve rompersi) ---------- */
+/* ---------- Footer (stile mostraMI) ---------- */
+.footer {
+  max-width: 780px; margin: 0 auto; width: 100%;
+  padding: 1.3rem 1rem 2rem; text-align: center; color: var(--testo-soft);
+  font-size: 0.9rem; border-top: 1px solid var(--bordo);
+}
+.footer-copy { line-height: 1.7; }
+.footer-made { display: inline-flex; align-items: center; gap: 0.3rem; }
+.footer-logo { height: 1.3em; width: auto; vertical-align: middle; }
+
+/* ---------- Tablet / desktop ---------- */
 @media (min-width: 720px) {
   .azioni-finali { flex-direction: row; flex-wrap: wrap; }
   .azioni-finali .btn { width: auto; flex: 1; }
   .scelte { flex-direction: row; flex-wrap: wrap; }
   .scelta-card { flex: 1 1 220px; }
 }
-
 @media (prefers-reduced-motion: no-preference) {
   .swatch, .btn, .scelta-card, .tpl-btn { transition: border-color 0.12s ease, box-shadow 0.12s ease; }
 }

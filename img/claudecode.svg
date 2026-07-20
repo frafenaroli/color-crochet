@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" role="img" aria-label="Claude Code">
+  <mask id="cc-holes">
+    <rect x="0" y="0" width="640" height="640" fill="black"/>
+    <!-- corpo -->
+    <rect x="85" y="130" width="470" height="330" fill="white"/>
+    <!-- protuberanze laterali -->
+    <rect x="0" y="320" width="85" height="95" fill="white"/>
+    <rect x="555" y="320" width="85" height="95" fill="white"/>
+    <!-- zampe -->
+    <rect x="120" y="460" width="35" height="80" fill="white"/>
+    <rect x="185" y="460" width="35" height="80" fill="white"/>
+    <rect x="405" y="460" width="35" height="80" fill="white"/>
+    <rect x="470" y="460" width="35" height="80" fill="white"/>
+    <!-- occhi (fori) -->
+    <rect x="158" y="205" width="38" height="100" fill="black"/>
+    <rect x="445" y="205" width="38" height="100" fill="black"/>
+  </mask>
+  <rect x="0" y="0" width="640" height="640" fill="#C96E4F" mask="url(#cc-holes)"/>
+</svg>
